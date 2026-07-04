@@ -1,9 +1,9 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import type { Framework } from "./frameworks";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-const MODEL = "claude-sonnet-4-6";
+const MODEL = "gpt-4o";
 
 export interface Challenge {
   title: string;
@@ -32,23 +32,16 @@ Rules:
   "prompt" may use markdown for formatting (code fences, lists) within the
   problem statement itself.`;
 
-  const message = await anthropic.messages.create({
+  const completion = await openai.chat.completions.create({
     model: MODEL,
-    max_tokens: 800,
-    system,
+    response_format: { type: "json_object" },
     messages: [
-      {
-        role: "user",
-        content: `Generate today's ${framework.label} challenge.`,
-      },
+      { role: "system", content: system },
+      { role: "user", content: `Generate today's ${framework.label} challenge.` },
     ],
   });
 
-  const text = message.content
-    .filter((block): block is Anthropic.TextBlock => block.type === "text")
-    .map((block) => block.text)
-    .join("");
-
+  const text = completion.choices[0]?.message?.content ?? "{}";
   const parsed = JSON.parse(text) as { title: string; prompt: string };
 
   return {
@@ -102,11 +95,10 @@ No headers, no bullet rubric, no numeric scores, no markdown tables.
 Be honest about real issues — don't soften them — but keep the tone like
 a peer coaching, not a formal PR review.`;
 
-  const message = await anthropic.messages.create({
+  const completion = await openai.chat.completions.create({
     model: MODEL,
-    max_tokens: 700,
-    system,
     messages: [
+      { role: "system", content: system },
       {
         role: "user",
         content: `Framework: ${framework.label}
@@ -122,8 +114,5 @@ ${code}
     ],
   });
 
-  return message.content
-    .filter((block): block is Anthropic.TextBlock => block.type === "text")
-    .map((block) => block.text)
-    .join("");
+  return completion.choices[0]?.message?.content ?? "";
 }

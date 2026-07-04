@@ -7,14 +7,14 @@ you write — the AI's only job is reviewing your submission afterward.
 
 - Pick a framework from the fixed list on the home page.
 - The app fetches today's challenge for that framework (generated once per
-  day per framework by Claude, then cached in Vercel KV — everyone who picks
+  day per framework by GPT-4o, then cached in Vercel KV — everyone who picks
   "React" today gets the same challenge).
 - You get 10 minutes in a CodeMirror editor (syntax highlighting only, no
   autocomplete/AI). The countdown is stored in `localStorage`, so refreshing
   the page doesn't reset it.
 - When time hits zero, the editor locks (read-only) but you can still submit
   whatever you have.
-- Claude reviews the submission — statically, it never executes your code —
+- GPT-4o reviews the submission — statically, it never executes your code —
   using the relevant subset of correctness / readability / architecture /
   security / performance, and frames feedback differently depending on
   whether you finished early or ran out of time.
@@ -27,7 +27,7 @@ you write — the AI's only job is reviewing your submission afterward.
 ```bash
 npm install
 cp .env.example .env.local
-# fill in ANTHROPIC_API_KEY at minimum
+# fill in OPENAI_API_KEY at minimum
 npm run dev
 ```
 
@@ -43,7 +43,7 @@ page load).
 1. Push this repo to GitHub and import it in Vercel.
 2. In the Vercel project: **Storage → Create → KV**, then connect it to the
    project — this auto-populates `KV_REST_API_URL` / `KV_REST_API_TOKEN`.
-3. Add `ANTHROPIC_API_KEY` under **Settings → Environment Variables**.
+3. Add `OPENAI_API_KEY` under **Settings → Environment Variables**.
 4. Deploy.
 
 ## Deliberately out of scope for v1

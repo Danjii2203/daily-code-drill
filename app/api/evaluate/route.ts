@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFramework } from "@/lib/frameworks";
-import { evaluateSubmission, type Challenge } from "@/lib/claude";
+import { evaluateSubmission, type Challenge } from "@/lib/openai";
 
 export const runtime = "nodejs";
 

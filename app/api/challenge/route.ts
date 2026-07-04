@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFramework } from "@/lib/frameworks";
 import { getCachedChallenge, setCachedChallenge } from "@/lib/kv";
-import { generateChallenge } from "@/lib/claude";
+import { generateChallenge } from "@/lib/openai";
 
 export const runtime = "nodejs";
 

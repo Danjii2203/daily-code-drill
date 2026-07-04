@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { getFramework } from "@/lib/frameworks";
-import type { Challenge } from "@/lib/claude";
+import type { Challenge } from "@/lib/openai";
 import { useTimer, DRILL_SECONDS } from "@/hooks/useTimer";
 import { CodeEditor } from "@/components/CodeEditor";
 import { Timer } from "@/components/Timer";
