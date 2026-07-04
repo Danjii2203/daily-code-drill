@@ -31,7 +31,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Upstash Redis (`UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`) is only
+Upstash Redis (`KV_REST_API_URL` / `KV_REST_API_TOKEN`) is only
 required if you want challenge caching to actually work locally against a
 real store. If you're just testing the UI, you can run without it — the
 challenge generation call will simply run on every request instead of being
@@ -43,7 +43,7 @@ per page load).
 1. Push this repo to GitHub and import it in Vercel.
 2. In the Vercel project: **Storage → Marketplace Database Providers →
    Upstash → Create**, then connect it to the project — this
-   auto-populates `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`.
+   auto-populates `KV_REST_API_URL` / `KV_REST_API_TOKEN`.
    (Vercel KV itself was sunset in late 2024; Upstash Redis is the
    replacement.)
 3. Add `OPENAI_API_KEY` under **Settings → Environment Variables**.

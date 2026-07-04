@@ -3,10 +3,10 @@ import { todayKey } from "./date";
 import type { Challenge } from "./openai";
 
 // Vercel KV was sunset; Upstash Redis (via Vercel Marketplace) is the
-// replacement. Redis.fromEnv() reads UPSTASH_REDIS_REST_URL /
-// UPSTASH_REDIS_REST_TOKEN, which Vercel auto-populates once you connect
+// replacement. Redis.fromEnv() reads KV_REST_API_URL /
+// KV_REST_API_TOKEN, which Vercel auto-populates once you connect
 // the Upstash integration to this project.
-const REDIS_CONFIGURED = Boolean(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
+const REDIS_CONFIGURED = Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 const redis = REDIS_CONFIGURED ? Redis.fromEnv() : null;
 
 function cacheKey(frameworkId: string): string {
@@ -28,7 +28,7 @@ export async function getCachedChallenge(frameworkId: string): Promise<Challenge
 export async function setCachedChallenge(frameworkId: string, challenge: Challenge): Promise<void> {
   if (!redis) {
     console.warn(
-      "UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN not set — skipping cache write. " +
+      "KV_REST_API_URL / KV_REST_API_TOKEN not set — skipping cache write. " +
         "Every request will regenerate today's challenge. Set these (see .env.example) to fix."
     );
     return;
