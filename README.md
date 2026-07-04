@@ -7,8 +7,8 @@ you write — the AI's only job is reviewing your submission afterward.
 
 - Pick a framework from the fixed list on the home page.
 - The app fetches today's challenge for that framework (generated once per
-  day per framework by GPT-4o, then cached in Vercel KV — everyone who picks
-  "React" today gets the same challenge).
+  day per framework by GPT-4o, then cached in Upstash Redis — everyone who
+  picks "React" today gets the same challenge).
 - You get 10 minutes in a CodeMirror editor (syntax highlighting only, no
   autocomplete/AI). The countdown is stored in `localStorage`, so refreshing
   the page doesn't reset it.
@@ -31,18 +31,21 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Vercel KV (`KV_REST_API_URL` / `KV_REST_API_TOKEN`) is only required if you
-want challenge caching to actually work locally against a real store. If
-you're just testing the UI, you can run without it — the challenge
-generation call will simply run on every request instead of being cached
-(fine for local dev, not for production, since it costs an API call per
-page load).
+Upstash Redis (`UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`) is only
+required if you want challenge caching to actually work locally against a
+real store. If you're just testing the UI, you can run without it — the
+challenge generation call will simply run on every request instead of being
+cached (fine for local dev, not for production, since it costs an API call
+per page load).
 
 ## Deploying to Vercel
 
 1. Push this repo to GitHub and import it in Vercel.
-2. In the Vercel project: **Storage → Create → KV**, then connect it to the
-   project — this auto-populates `KV_REST_API_URL` / `KV_REST_API_TOKEN`.
+2. In the Vercel project: **Storage → Marketplace Database Providers →
+   Upstash → Create**, then connect it to the project — this
+   auto-populates `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`.
+   (Vercel KV itself was sunset in late 2024; Upstash Redis is the
+   replacement.)
 3. Add `OPENAI_API_KEY` under **Settings → Environment Variables**.
 4. Deploy.
 
