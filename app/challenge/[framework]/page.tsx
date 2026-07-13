@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { getFramework } from "@/lib/frameworks";
-import type { Challenge } from "@/lib/openai";
+import type { Challenge, Evaluation } from "@/lib/openai";
 import { useTimer, DRILL_SECONDS } from "@/hooks/useTimer";
 import { CodeEditor } from "@/components/CodeEditor";
 import { Timer } from "@/components/Timer";
@@ -20,7 +20,7 @@ export default function ChallengePage() {
 
   const [load, setLoad] = useState<LoadState>({ status: "loading" });
   const [code, setCode] = useState("");
-  const [feedback, setFeedback] = useState<string | null>(null);
+  const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -79,8 +79,8 @@ export default function ChallengePage() {
         }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? "Review failed.");
-      const data = (await res.json()) as { feedback: string };
-      setFeedback(data.feedback);
+      const data = (await res.json()) as Evaluation;
+      setEvaluation(data);
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
@@ -90,7 +90,7 @@ export default function ChallengePage() {
 
   function handleRetry() {
     setCode("");
-    setFeedback(null);
+    setEvaluation(null);
     setSubmitError(null);
     start();
   }
@@ -115,11 +115,17 @@ export default function ChallengePage() {
             {load.challenge.prompt}
           </div>
 
-          {feedback ? (
-            <FeedbackPanel feedback={feedback} completedEarly={secondsRemaining > 0} onRetry={handleRetry} />
+          {evaluation ? (
+            <FeedbackPanel
+              feedback={evaluation.feedback}
+              solution={evaluation.solution}
+              language={framework.language}
+              completedEarly={secondsRemaining > 0}
+              onRetry={handleRetry}
+            />
           ) : (
             <>
-              <div className="h-80">
+              <div>
                 <CodeEditor value={code} onChange={setCode} language={framework.language} readOnly={isLocked} />
               </div>
               <div className="mt-4 flex items-center gap-4">

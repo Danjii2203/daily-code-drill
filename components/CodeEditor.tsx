@@ -52,7 +52,7 @@ interface CodeEditorProps {
 export function CodeEditor({ value, onChange, language, readOnly }: CodeEditorProps) {
   return (
     <div
-      className={`h-full rounded-md border transition-colors ${
+      className={`h-full rounded-md border transition-colors min-h-80 ${
         readOnly ? "border-critical/50" : "border-border"
       }`}
     >

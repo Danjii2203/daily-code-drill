@@ -26,14 +26,14 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const feedback = await evaluateSubmission({
+    const evaluation = await evaluateSubmission({
       framework,
       challenge: body.challenge,
       code: body.code,
       completedEarly: Boolean(body.completedEarly),
       secondsRemainingAtSubmit: body.secondsRemainingAtSubmit ?? 0,
     });
-    return NextResponse.json({ feedback });
+    return NextResponse.json(evaluation);
   } catch (err) {
     console.error("Evaluation failed", err);
     return NextResponse.json({ error: "Could not review the submission. Try again." }, { status: 502 });

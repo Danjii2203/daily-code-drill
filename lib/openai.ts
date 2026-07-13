@@ -60,13 +60,19 @@ export interface EvaluationRequest {
   secondsRemainingAtSubmit: number;
 }
 
+export interface Evaluation {
+  feedback: string;
+  solution: string; // reference solution, hidden behind a reveal in the UI
+}
+
 /**
  * Static review only — no code execution. Reviews against the relevant
  * subset of the five code-review-and-quality axes (correctness,
  * readability, architecture, security, performance), skipping axes that
- * don't meaningfully apply to the snippet.
+ * don't meaningfully apply to the snippet. Also returns a reference
+ * solution so the UI can offer it behind a "see result" toggle.
  */
-export async function evaluateSubmission(req: EvaluationRequest): Promise<string> {
+export async function evaluateSubmission(req: EvaluationRequest): Promise<Evaluation> {
   const { framework, challenge, code, completedEarly, secondsRemainingAtSubmit } = req;
 
   const timingNote = completedEarly
@@ -93,10 +99,17 @@ ${completedEarly ? "" : "Acknowledge the incompleteness first and briefly, then 
 Write 2-4 short paragraphs of plain, direct, conversational feedback.
 No headers, no bullet rubric, no numeric scores, no markdown tables.
 Be honest about real issues — don't soften them — but keep the tone like
-a peer coaching, not a formal PR review.`;
+a peer coaching, not a formal PR review.
+
+Also write a clean, idiomatic reference solution to the original challenge
+in ${framework.label}, independent of what the developer submitted.
+
+Output ONLY a JSON object with this exact shape, no prose, no markdown
+fences: {"feedback": string, "solution": string}`;
 
   const completion = await openai.chat.completions.create({
     model: MODEL,
+    response_format: { type: "json_object" },
     messages: [
       { role: "system", content: system },
       {
@@ -114,5 +127,7 @@ ${code}
     ],
   });
 
-  return completion.choices[0]?.message?.content ?? "";
+  const text = completion.choices[0]?.message?.content ?? "{}";
+  const parsed = JSON.parse(text) as Partial<Evaluation>;
+  return { feedback: parsed.feedback ?? "", solution: parsed.solution ?? "" };
 }
